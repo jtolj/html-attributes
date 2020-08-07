@@ -1,0 +1,48 @@
+{
+  "name": "jtolj/html-attributes",
+  "description": "A Fluent Interface for Handling HTML Attributes in PHP.",
+  "keywords": [
+    "html attributes",
+    "attributes",
+    "templates",
+    "templating",
+    "escape attributes"
+  ],
+  "homepage": "https://github.com/jtolj/html-attributes",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Jesse Tolj",
+      "email": "jesse@objectfactory.io",
+      "homepage": "https://github.com/jtolj",
+      "role": "Developer"
+    }
+  ],
+  "require": {
+    "php": "^7.3",
+    "laminas/laminas-escaper": "^2.6"
+  },
+  "require-dev": {
+    "nunomaduro/phpinsights": "^1.14",
+    "phpunit/phpunit": "^8.4|^9.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Jtolj\\HtmlAttributes\\": "src"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Jtolj\\HtmlAttributes\\Test\\": "tests"
+    }
+  },
+  "scripts": {
+    "test": "vendor/bin/phpunit tests"
+  },
+  "extra": {
+    "laravel": {}
+  },
+  "config": {
+    "sort-packages": true
+  }
+}
