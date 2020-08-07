@@ -11,7 +11,7 @@ I use it primarily in Laravel, so the pseudocode examples below use Laravel conv
 ```php
 
 use App\Post;
-use ObjectFactory\HtmlAttributes\HtmlAttributes;
+use Jtolj\HtmlAttributes\HtmlAttributes;
 
 $post = Post::find(1);
 $post->is_wide = true;
@@ -28,7 +28,7 @@ echo "<div $attributes>$post->escaped_content</div>"
 ### Output
 
 ```html
-<div class="card card--wide one two three" id="post-1">Hello World</div>
+<div class="card card--wide" id="post-1">Hello World</div>
 ```
 
 ### Using the example Trait with a Eloquent model and Blade template:
@@ -37,7 +37,7 @@ echo "<div $attributes>$post->escaped_content</div>"
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
-use ObjectFactory\HtmlAttributes\Traits\HasHtmlAttributes;
+use Jtolj\HtmlAttributes\Traits\HasHtmlAttributes;
 class Post extends Model
 {
     use HasHtmlAttributes;
@@ -71,7 +71,7 @@ You can set your own list of stripped prefixes with the `setUnsafePrefixes(array
 You can also turn this behavior off by calling `allowUnsafe()`. This will not filter the list of attribute names before output.
 
 ```php
-use ObjectFactory\LaravelHtmlAttributes\HtmlAttributes;
+use Jtolj\HtmlAttributes\HtmlAttributes;
 
 $attributes = new HtmlAttributes;
 $attributes->addClass('card');
