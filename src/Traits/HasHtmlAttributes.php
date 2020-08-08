@@ -7,6 +7,11 @@ use Jtolj\HtmlAttributes\HtmlAttributes;
 trait HasHtmlAttributes
 {
 
+    /*
+     * @var Jtolj\HtmlAttributes\HtmlAttributes
+     */
+    protected $_html_attributes;
+
     /**
      * Accessor for htmlAttributes.
      *
@@ -15,6 +20,9 @@ trait HasHtmlAttributes
      */
     public function htmlAttributes(iterable $attributes = [])
     {
-        return new HtmlAttributes($attributes);
+        if (!$this->_html_attributes) {
+            $this->_html_attributes = new HtmlAttributes($attributes);
+        }
+        return $this->_html_attributes;
     }
 }
