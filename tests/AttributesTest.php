@@ -84,14 +84,18 @@ class AttributesTest extends TestCase
     }
 
     /** @test */
-    public function it_can_disallow_unsafe_attribugtes()
+    public function it_can_disallow_unsafe_attributes()
     {
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
 
         $this->assertStringNotContainsString('onclick', (string) $attributes);
+    }
 
+        /** @test */
+    public function it_can_allow_unsafe_attributes()
+    {
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
-         $attributes->allowUnsafe();
+        $attributes->allowUnsafe();
 
         $this->assertStringContainsString('onclick', (string) $attributes);
     }
