@@ -17,10 +17,8 @@ class AttributesTest extends TestCase
 
         $this->assertContains('card', $attributes->offsetGet('class'));
         $this->assertTrue($attributes->hasClass('card'));
-        $this->assertStringContainsString('class="card', (string) $attributes);
-
         $this->assertContains('disabled', $attributes->offsetGet('disabled'));
-        $this->assertStringContainsString('disabled="disabled', (string) $attributes);
+        $this->assertEquals('class="card" disabled="disabled"', (string) $attributes);
     }
 
     /** @test */
@@ -30,7 +28,7 @@ class AttributesTest extends TestCase
         $attributes->setAttribute('id', 'card');
 
         $this->assertContains('card', $attributes->offsetGet('id'));
-        $this->assertStringContainsString('id="card"', (string) $attributes);
+        $this->assertEquals('id="card"', (string) $attributes);
     }
 
     /** @test */
@@ -41,7 +39,7 @@ class AttributesTest extends TestCase
         $attributes->removeAttribute('id');
 
         $this->assertNull($attributes->offsetGet('id'));
-        $this->assertStringNotContainsString('id', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
     }
 
      /** @test */
@@ -53,7 +51,7 @@ class AttributesTest extends TestCase
 
         $this->assertContains('card', $attributes->offsetGet('class'));
         $this->assertTrue($attributes->hasClass('card'));
-        $this->assertStringContainsString('class="card"', (string) $attributes);
+        $this->assertEquals('class="card"', (string) $attributes);
     }
 
      /** @test */
@@ -65,8 +63,7 @@ class AttributesTest extends TestCase
 
         $this->assertContains('card', $attributes->offsetGet('class'));
         $this->assertNotContains('card--wide', $attributes->offsetGet('class'));
-        $this->assertStringContainsString('class="card"', (string) $attributes);
-        $this->assertStringNotContainsString('card--wide', (string) $attributes);
+        $this->assertEquals('class="card"', (string) $attributes);
     }
 
      /** @test */
@@ -78,9 +75,7 @@ class AttributesTest extends TestCase
         $attributes->removeClass('card');
 
         $this->assertNull($attributes->offsetGet('class'));
-        $this->assertStringNotContainsString('card', (string) $attributes);
-        $this->assertStringNotContainsString('card--wide', (string) $attributes);
-        $this->assertStringNotContainsString('class', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
     }
 
     /** @test */
@@ -88,7 +83,7 @@ class AttributesTest extends TestCase
     {
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
 
-        $this->assertStringNotContainsString('onclick', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
     }
 
         /** @test */
@@ -97,6 +92,6 @@ class AttributesTest extends TestCase
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
         $attributes->allowUnsafe();
 
-        $this->assertStringContainsString('onclick', (string) $attributes);
+        $this->assertEquals('onclick="alert&#x28;&quot;hello&quot;&#x29;&#x3B;"', (string) $attributes);
     }
 }

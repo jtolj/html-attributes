@@ -17,7 +17,7 @@ class ConditionalsTest extends TestCase
             return true;
         });
 
-        $this->assertStringContainsString('id="card', (string) $attributes);
+        $this->assertEquals('id="card"', (string) $attributes);
 
         $attributes = new HtmlAttributes();
 
@@ -25,7 +25,7 @@ class ConditionalsTest extends TestCase
             return false;
         });
 
-        $this->assertStringNotContainsString('id="card', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
     }
 
     /** @test */
@@ -35,13 +35,13 @@ class ConditionalsTest extends TestCase
 
         $attributes->setAttributeIf('id', 'card', true);
 
-        $this->assertStringContainsString('id="card', (string) $attributes);
+        $this->assertEquals('id="card"', (string) $attributes);
 
         $attributes = new HtmlAttributes();
 
         $attributes->setAttributeIf('id', 'card', false);
 
-        $this->assertStringNotContainsString('id="card', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
     }
 
     /** @test */
@@ -53,7 +53,7 @@ class ConditionalsTest extends TestCase
             return true;
         });
 
-        $this->assertStringNotContainsString('id="card', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
 
         $attributes = new HtmlAttributes();
 
@@ -61,7 +61,7 @@ class ConditionalsTest extends TestCase
             return false;
         });
 
-        $this->assertStringContainsString('id="card', (string) $attributes);
+        $this->assertEquals('id="card"', (string) $attributes);
     }
 
     /** @test */
@@ -71,12 +71,12 @@ class ConditionalsTest extends TestCase
 
         $attributes->setAttributeUnless('id', 'card', true);
 
-        $this->assertStringNotContainsString('id="card', (string) $attributes);
+        $this->assertEquals('', (string) $attributes);
 
         $attributes = new HtmlAttributes();
 
         $attributes->setAttributeUnless('id', 'card', false);
 
-        $this->assertStringContainsString('id="card', (string) $attributes);
+        $this->assertEquals('id="card"', (string) $attributes);
     }
 }
