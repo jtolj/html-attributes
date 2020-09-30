@@ -2,6 +2,7 @@
 namespace Jtolj\HtmlAttributes;
 
 use Jtolj\HtmlAttributes\Exceptions\InvalidValueException;
+use Jtolj\HtmlAttributes\Helpers\Str;
 use Laminas\Escaper\Escaper;
 
 class HtmlAttributes
@@ -58,42 +59,20 @@ class HtmlAttributes
      * @return      */
     public function __call($name, $arguments)
     {
-        $keywords = ['If', 'Unless'];
 
-        foreach ($keywords as $keyword) {
-            $length = strlen($keyword);
-            if (substr($name, -$length) === $keyword) {
-                $suffix = $keyword;
-                $method = substr($name, 0, -$length);
-                break;
-            }
-        }
+        if ($suffix = Str::extractSuffix($name, ['If', 'Unless'])) {
 
-        if (isset($suffix)) {
-            switch ($suffix) {
-                case 'If':
-                    $conditional = array_pop($arguments);
-                    if (is_callable($conditional)) {
-                        if (call_user_func($conditional)) {
-                            call_user_func_array([$this, $method], $arguments);
-                        }
-                    } elseif ((bool) $conditional) {
-                        call_user_func_array([$this, $method], $arguments);
-                    }
-                    return $this;
-                break;
-                case 'Unless':
-                    $conditional = array_pop($arguments);
-                    if (is_callable($conditional)) {
-                        if (!call_user_func($conditional)) {
-                            call_user_func_array([$this, $method], $arguments);
-                        }
-                    } elseif (!(bool) $conditional) {
-                        call_user_func_array([$this, $method], $arguments);
-                    }
-                    return $this;
-                    break;
+            $method = substr($name, 0, -strlen($suffix));
+            $conditional = array_pop($arguments);
+            $conditional_passed = is_callable($conditional) ? call_user_func($conditional) : (bool) $conditional;
+            $should_run = $suffix === 'If' ? $conditional_passed : ! $conditional_passed;
+
+            if ($should_run) {
+                call_user_func_array([$this, $method], $arguments);
             }
+
+            return $this;
+
         }
 
         trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);

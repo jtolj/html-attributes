@@ -18,7 +18,7 @@ $post->is_wide = true;
 $attributes = new HtmlAttributes();
 $attributes
     ->addClass('card');
-    ->setAttribute('id', "post-{$post->id})");
+    ->setAttribute('id', "post-{$post->id}");
 $attributes->addClassIf('card--wide', $post->is_wide);
 
 echo "<div $attributes>$post->escaped_content</div>"
