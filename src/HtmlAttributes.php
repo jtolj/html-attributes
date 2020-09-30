@@ -1,4 +1,5 @@
 <?php
+
 namespace Jtolj\HtmlAttributes;
 
 use Jtolj\HtmlAttributes\Exceptions\InvalidValueException;
@@ -7,7 +8,6 @@ use Laminas\Escaper\Escaper;
 
 class HtmlAttributes
 {
-
     /**
      * @var Escaper
      */
@@ -31,8 +31,8 @@ class HtmlAttributes
     /**
      * Constructor for HtmlAttributes.
      *
-     * @param iterable $attributes
      * @param bool $allow_unsafe
+     *
      * @return void
      */
     public function __construct(iterable $attributes = [], $allow_unsafe = false)
@@ -55,24 +55,22 @@ class HtmlAttributes
      *   Would add the class 'even' if (bool) $loop->odd === false.
      *
      * @param string $name
-     * @param array $arguments
+     * @param array  $arguments
+     *
      * @return      */
     public function __call($name, $arguments)
     {
-
         if ($suffix = Str::extractSuffix($name, ['If', 'Unless'])) {
-
             $method = substr($name, 0, -strlen($suffix));
             $conditional = array_pop($arguments);
             $conditional_passed = is_callable($conditional) ? call_user_func($conditional) : (bool) $conditional;
-            $should_run = $suffix === 'If' ? $conditional_passed : ! $conditional_passed;
+            $should_run = $suffix === 'If' ? $conditional_passed : !$conditional_passed;
 
             if ($should_run) {
                 call_user_func_array([$this, $method], $arguments);
             }
 
             return $this;
-
         }
 
         trigger_error('Call to undefined method '.__CLASS__.'::'.$name.'()', E_USER_ERROR);
@@ -103,30 +101,35 @@ class HtmlAttributes
             }
             $output .= $this->render($attribute, $value);
         }
+
         return $output;
     }
 
     /**
      * Render an individual attribute.
      *
-     * @param string $attribute
+     * @param string       $attribute
      * @param string|array $value
      *
      * @return string
-     *   The output for an individual attribute, example: class="c-card"
+     *                The output for an individual attribute, example: class="c-card"
      */
     protected function render($attribute, $value)
     {
         $name = $attribute;
+
         $value = array_filter($value);
         $value = implode(' ', $value);
-        return sprintf('%s="%s"', $this->escaper->escapeHtmlAttr($name), $this->escaper->escapeHtmlAttr($value));
+        $output_value = $this->isUnsafe($attribute) && $this->allow_unsafe ? $value : $this->escaper->escapeHtml($value);
+
+        return sprintf('%s="%s"', $this->escaper->escapeHtmlAttr($name), $output_value);
     }
 
     /**
      * Get the value of storage at the specified offset.
      *
      * @param string $key
+     *
      * @return array
      */
     public function offsetGet($key)
@@ -137,10 +140,11 @@ class HtmlAttributes
     }
 
     /**
-     * Set the value of storage at the specified offset
+     * Set the value of storage at the specified offset.
      *
      * @param string $key
-     * @param array $value
+     * @param array  $value
+     *
      * @return void;
      */
     protected function offsetSet($key, $value)
@@ -148,12 +152,13 @@ class HtmlAttributes
         $this->storage[$key] = $value;
     }
 
-   /**
-    * Unset the specified offset.
-    *
-    * @param string $key
-    * @return void
-    */
+    /**
+     * Unset the specified offset.
+     *
+     * @param string $key
+     *
+     * @return void
+     */
     protected function offsetUnset($key)
     {
         unset($this->storage[$key]);
@@ -163,6 +168,7 @@ class HtmlAttributes
      * Whether the specified offset exists.
      *
      * @param string $key
+     *
      * @return bool
      */
     public function offsetExists($key)
@@ -181,10 +187,57 @@ class HtmlAttributes
     }
 
     /**
+     * Return a new instance with only the specified key(s).
+     *
+     * @param array|string $keys
+     *
+     * @return HtmlAttributes
+     */
+    public function only($keys)
+    {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+
+        $instance = new self([], $this->allow_unsafe);
+        foreach ($keys as $key) {
+            $instance->setAttribute($key, $this->offsetGet($key));
+        }
+        $instance->setUnsafePrefixes($this->unsafe_prefixes);
+
+        return $instance;
+    }
+
+    /**
+     * Return a new instance without the specified key(s).
+     *
+     * @param array|string $keys
+     *
+     * @return HtmlAttributes
+     */
+    public function without($keys)
+    {
+        if (!is_array($keys)) {
+            $keys = [$keys];
+        }
+
+        $instance = new self($this->storage, $this->allow_unsafe);
+
+        foreach ($keys as $key) {
+            $instance->removeAttribute($key);
+        }
+
+        $instance->setUnsafePrefixes($this->unsafe_prefixes);
+
+        return $instance;
+    }
+
+    /**
      * Set an attribute value, replacing previous value(s).
      *
-     * @param string $attribute
+     * @param string       $attribute
      * @param string|array $value
+     *
      * @return HtmlAttributes
      */
     public function setAttribute($attribute, $value)
@@ -203,7 +256,7 @@ class HtmlAttributes
     /**
      * Add a value or values to an attribute, leaving existing values in place.
      *
-     * @param string $attribute
+     * @param string       $attribute
      * @param string|array $value
      *
      * @return HtmlAttributes
@@ -226,11 +279,9 @@ class HtmlAttributes
         return $this;
     }
 
-
     /**
      * Remove an attribute from the list.
      *
-     * @param string $attribute
      * @return HtmlAttributes
      */
     public function removeAttribute(string $attribute)
@@ -258,7 +309,7 @@ class HtmlAttributes
     /**
      * Remove $className from the class attribute.
      *
-     * @param String $className
+     * @param string $className
      *
      * @return HtmlAttributes
      */
@@ -271,56 +322,55 @@ class HtmlAttributes
                 $this->removeAttribute('class');
             }
         }
+
         return $this;
     }
 
     /**
      * Checks if $className is in the class attribute.
      *
-     * @param String $className
-     *   The class name to search for.
+     * @param string $className
+     *                          The class name to search for
      *
      * @return bool
-     *   TRUE if the class exists, otherwise FALSE.
+     *              TRUE if the class exists, otherwise FALSE
      */
     public function hasClass($className)
     {
         if (isset($this->storage['class'])) {
             return in_array($className, $this->storage['class']);
         }
+
         return false;
     }
-
 
     /**
      * Setter for unsafe prefixes.
      *
-     * @param array $prefixes
      * @return void
      */
     public function setUnsafePrefixes(array $prefixes)
     {
         $this->unsafe_prefixes = $prefixes;
+
         return $this;
     }
-
 
     /**
      * Whether to allow "unsafe" attribute names (javascript event handlers) in the output.
      *
-     * @param bool $allow
      * @return void
      */
     public function allowUnsafe(bool $allow = true)
     {
         $this->allow_unsafe = $allow;
+
         return $this;
     }
 
     /**
      * Whether the attribute name is "unsafe" (a javascript event handler).
      *
-     * @param string $attribute
      * @return bool
      */
     protected function isUnsafe(string $attribute)
@@ -329,6 +379,7 @@ class HtmlAttributes
             if (strpos($attribute, $prefix) === 0) {
                 $is_unsafe = true;
             }
+
             return $is_unsafe;
         }, false);
     }
