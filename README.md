@@ -62,13 +62,15 @@ class Post extends Model
 
 ## Escaping and Filtering
 
-Escaping of attribute names and values is done using the laminas/laminas-escaper package.
+Escaping of attribute names and values is done using the laminas/laminas-escaper package. Attribute keys are escaped using the [escapeHtmlAttr()](https://github.com/laminas/laminas-escaper/blob/2.7.x/src/Escaper.php#L158) method. As of 2.0, attribute values are escaped using the [escapeHtml()](https://github.com/laminas/laminas-escaper/blob/2.7.x/src/Escaper.php#L145) method.
 
 Additionally, by default attribute names starting with 'on' (javascript event handlers) are not output.
 
 You can set your own list of stripped prefixes with the `setUnsafePrefixes(array $prefixes)` method. Attribute names beginning with those prefixes are stripped on output.
 
-You can also turn this behavior off by calling `allowUnsafe()`. This will not filter the list of attribute names before output.
+You can also turn this behavior off by calling `allowUnsafe()`. This will not filter the list of attribute names before output and will output the value of 'unsafe' attributes fully unescaped (as of 2.0). **Be extremely careful with this behavior to prevent XSS.**
+
+
 
 ```php
 use Jtolj\HtmlAttributes\HtmlAttributes;
