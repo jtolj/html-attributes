@@ -2,12 +2,11 @@
 
 namespace Jtolj\HtmlAttributes\Test;
 
-use PHPUnit\Framework\TestCase;
 use Jtolj\HtmlAttributes\HtmlAttributes;
+use PHPUnit\Framework\TestCase;
 
 class AttributesTest extends TestCase
 {
-
     /** @test */
     public function it_is_initializable()
     {
@@ -42,19 +41,20 @@ class AttributesTest extends TestCase
         $this->assertEquals('', (string) $attributes);
     }
 
-     /** @test */
-    public function it_can_have_a_class_added_to_it()
+    /** @test */
+    public function it_can_have_classes_added_to_it()
     {
         $attributes = new HtmlAttributes();
 
         $attributes->addClass('card');
+        $attributes->addClass('card--wide');
 
         $this->assertContains('card', $attributes->offsetGet('class'));
         $this->assertTrue($attributes->hasClass('card'));
-        $this->assertEquals('class="card"', (string) $attributes);
+        $this->assertEquals('class="card card--wide"', (string) $attributes);
     }
 
-     /** @test */
+    /** @test */
     public function it_can_have_a_class_removed_from_it()
     {
         $attributes = new HtmlAttributes(['class' => ['card', 'card--wide']]);
@@ -66,7 +66,7 @@ class AttributesTest extends TestCase
         $this->assertEquals('class="card"', (string) $attributes);
     }
 
-     /** @test */
+    /** @test */
     public function it_can_have_all_classes_removed_from_it()
     {
         $attributes = new HtmlAttributes(['class' => ['card', 'card--wide']]);
@@ -86,12 +86,52 @@ class AttributesTest extends TestCase
         $this->assertEquals('', (string) $attributes);
     }
 
-        /** @test */
+    /** @test */
     public function it_can_allow_unsafe_attributes()
     {
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
         $attributes->allowUnsafe();
 
-        $this->assertEquals('onclick="alert&#x28;&quot;hello&quot;&#x29;&#x3B;"', (string) $attributes);
+        $this->assertEquals('onclick="alert("hello");"', (string) $attributes);
+    }
+
+    /** @test */
+    public function it_can_return_a_subset_of_keys_from_a_string()
+    {
+        $attributes = new HtmlAttributes(['class' => ['one', 'two', 'three'], 'id' => 'card']);
+
+        $only_classes = $attributes->only('class');
+
+        $this->assertEquals('class="one two three"', (string) $only_classes);
+    }
+
+    /** @test */
+    public function it_can_return_a_subset_of_keys_from_an_array()
+    {
+        $attributes = new HtmlAttributes(['class' => ['one', 'two', 'three'], 'id' => 'card', 'for' => 'carditem']);
+
+        $only_class_and_id = $attributes->only(['id', 'class']);
+
+        $this->assertEquals('class="one two three" id="card"', (string) $only_class_and_id);
+    }
+
+    /** @test */
+    public function it_can_exclude_a_key_from_a_string()
+    {
+        $attributes = new HtmlAttributes(['class' => ['one', 'two', 'three'], 'id' => 'card']);
+
+        $only_id = $attributes->without('id');
+
+        $this->assertEquals('class="one two three"', (string) $only_id);
+    }
+
+    /** @test */
+    public function it_can_exclude_a_subset_of_keys_from_an_array()
+    {
+        $attributes = new HtmlAttributes(['class' => ['one', 'two', 'three'], 'id' => 'card', 'for' => 'carditem']);
+
+        $only_for = $attributes->without(['id', 'class']);
+
+        $this->assertEquals('for="carditem"', (string) $only_for);
     }
 }
