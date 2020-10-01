@@ -79,6 +79,33 @@ class AttributesTest extends TestCase
     }
 
     /** @test */
+    public function it_can_have_attributes_merged_into_it()
+    {
+        $attributes = new HtmlAttributes(['class' => ['card', 'card--wide'], 'id' => 'card-1']);
+        $attributes_copy = new HtmlAttributes(['class' => ['card', 'card--wide'], 'id' => 'card-1']);
+
+        // Test String
+        $attributes->mergeAttributes('aria-description', 'A description.');
+        $attributes_copy->merge('aria-description', 'A description.');
+
+        $this->assertEquals((string) $attributes, (string) $attributes_copy);
+        $this->assertEquals('aria-description="A description." class="card card--wide" id="card-1"', (string) $attributes);
+
+        // Test String Classes with Spaces
+        $attributes->mergeAttributes('class', 'one two three');
+        $attributes_copy->merge('class', 'one two three');
+
+        $this->assertEquals((string) $attributes, (string) $attributes_copy);
+        $this->assertEquals('aria-description="A description." class="card card--wide one two three" id="card-1"', (string) $attributes);
+
+        // Test Array
+        $attributes->mergeAttributes('class', ['red', 'blue', 'green']);
+        $attributes_copy->merge('class', ['red', 'blue', 'green']);
+        $this->assertEquals((string) $attributes, (string) $attributes_copy);
+        $this->assertEquals('aria-description="A description." class="card card--wide one two three red blue green" id="card-1"', (string) $attributes);
+    }
+
+    /** @test */
     public function it_can_disallow_unsafe_attributes()
     {
         $attributes = new HtmlAttributes(['onclick' => ['alert("hello");']]);
