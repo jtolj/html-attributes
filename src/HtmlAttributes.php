@@ -254,6 +254,19 @@ class HtmlAttributes
     }
 
     /**
+     * Alias for mergeAttributes().
+     *
+     * @param string       $attribute
+     * @param string|array $value
+     *
+     * @return HtmlAttributes
+     */
+    public function merge($attribute, $value)
+    {
+        return $this->mergeAttributes($attribute, $value);
+    }
+
+    /**
      * Add a value or values to an attribute, leaving existing values in place.
      *
      * @param string       $attribute
@@ -264,16 +277,23 @@ class HtmlAttributes
     public function mergeAttributes($attribute, $value)
     {
         $values = $this->offsetGet($attribute);
+
         if (!is_array($values)) {
             $values = [$values];
         }
+
         if (is_string($value) || (is_object($value) && method_exists($value, '__toString'))) {
-            $values[] = (string) $value;
+            if ($attribute === 'class') {
+                $values = array_merge($values, explode(' ', (string) $value));
+            } else {
+                $values[] = (string) $value;
+            }
         } elseif (is_array($value)) {
             $values = array_merge($values, (array) $value);
         } else {
             throw new InvalidValueException();
         }
+
         $this->offsetSet($attribute, array_values(array_unique($values)));
 
         return $this;
