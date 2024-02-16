@@ -1,3 +1,5 @@
+## This project has been archived. If you are using Laravel, see Illuminate\View\ComponentAttributeBag.
+
 # A Fluent Interface for Handling HTML Attributes in PHP
 
 The package provides a simple class, inspired by Drupal's Drupal\Core\Template\Attribute, to help manage HTML attributes in a structured way.
